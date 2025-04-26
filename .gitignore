@@ -1,0 +1,21 @@
+# Ignore les fichiers générés par l'environnement virtuel
+venv/
+env/
+*.pyc
+*.pyo
+
+# Ignore les fichiers créés par l'IDE ou l'éditeur de code
+.idea/
+.vscode/
+
+# Ignore les fichiers de configuration locale
+*.sqlite3
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore les fichiers de logs
+*.log
+
+# Ignore les fichiers de médias téléchargés localement
+media/
