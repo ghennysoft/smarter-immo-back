@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-gt$5x)vwy2dsgb@5j*oxk!()o9(39=3o_iwhlw=6+ettzx0jp*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "http://127.0.0.1:8000",
+    "smarter-immo.onrender.com", 
+]
 
 
 # Application definition
@@ -141,6 +144,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://smarter-immo.vercel.app",
 ]
 
 REST_FRAMEWORK = {
