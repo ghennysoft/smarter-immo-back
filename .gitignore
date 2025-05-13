@@ -9,7 +9,7 @@ env/
 .vscode/
 
 # Ignore les fichiers de configuration locale
-*.sqlite3
+# *.sqlite3
 *.pyc
 *.pyo
 __pycache__/
