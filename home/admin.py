@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Cour, Chapitre
 
-# Register your models here.
+
+admin.site.register(Cour)
+admin.site.register(Chapitre)
