@@ -1,41 +1,43 @@
-from rest_framework import viewsets, permissions, filters
-from rest_framework.decorators import action
+from django.shortcuts import render, get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from .models import Property, Favorite
 from .serializers import PropertySerializer, FavoriteSerializer
 
-class PropertyViewSet(viewsets.ModelViewSet):
-    queryset = Property.objects.all()
-    serializer_class = PropertySerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['property_type', 'annonce_type', 'city', 'bedrooms', 'bathrooms']
-    search_fields = ['title', 'description', 'address', 'city']
-    ordering_fields = ['price', 'created_at']
+class PropertyList(APIView):
+    def get(self, request):
+        properties = Property.objects.all()
+        serializer = PropertySerializer(properties, many=True)
+        return Response(serializer.data, status=200)
+    
+    def post(self, request):
+        serializer = PropertySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(owner=self.request.user)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-    @action(detail=True, methods=['post'])
-    def toggle_favorite(self, request, pk=None):
-        property = self.get_object()
-        favorite, created = Favorite.objects.get_or_create(
-            user=request.user,
-            property=property
-        )
-        if not created:
-            favorite.delete()
-            return Response({'status': 'removed from favorites'})
-        return Response({'status': 'added to favorites'})
-
-class FavoriteViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = FavoriteSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Favorite.objects.filter(user=self.request.user)
+class PropertyDetail(APIView):
+    def get_object(self, pk):
+        return get_object_or_404(Property, pk=pk)
+    
+    def get(self, request, pk):
+        property = self.get_object(pk)
+        serializer = PropertySerializer(property)
+        return Response(serializer.data, status=200)
+    
+    def put(self, request, pk):
+        property = self.get_object(pk)
+        serializer = PropertySerializer(property, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request, pk):
+        property = self.get_object(pk)
+        property.delete()
+        return Response(status=204)
+        

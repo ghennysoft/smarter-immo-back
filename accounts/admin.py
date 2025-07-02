@@ -6,7 +6,7 @@ from  django.contrib.auth import get_user_model
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'phone', 'password')}),
-        (('Personnal Info'), {'fields': ('first_name', 'last_name')}),
+        (('Personnal Info'), {'fields': ('first_name', 'last_name', 'gender', 'image')}),
         (('Permissions'), {'fields': ('is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')}),
         (('Importants dates'), {'fields': ('last_login', 'date_joined')}),
     )

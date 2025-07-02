@@ -16,6 +16,8 @@ class PropertySerializer(serializers.ModelSerializer):
         model = Property
         fields = '__all__'
 
+    read_only_fields = ['owner', 'created_at', 'updated_at']
+
     def get_is_favorite(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:

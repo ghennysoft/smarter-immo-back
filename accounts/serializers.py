@@ -35,7 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'phone', 'password')  # Utilisez les champs définis dans votre modèle User
+        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'password')  # Utilisez les champs définis dans votre modèle User
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -44,6 +44,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
             phone=validated_data.get('phone'),
+            gender=validated_data.get('gender'),
         )
         return user
     
@@ -62,10 +63,6 @@ class LoginSerializer(serializers.ModelSerializer):
 
         if not email or not password:
             raise serializers.ValidationError('Remplissez tous les champs')
-        
-        # if CustomUser.objects.filter(email=email).exists():
-        #     request = self.context.get('request')
-        #     user = authenticate(request, email=email, password=password)
 
         user = authenticate(email=email, password=password)
         print(f'serializer: {user}')
