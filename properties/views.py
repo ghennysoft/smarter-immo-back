@@ -19,6 +19,12 @@ class PropertyList(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+class MyPropertyList(APIView):
+    def get(self, request):
+        properties = Property.objects.filter(owner=self.request.user)
+        serializer = PropertySerializer(properties, many=True)
+        return Response(serializer.data, status=200)
+
 class PropertyDetail(APIView):
     def get_object(self, pk):
         return get_object_or_404(Property, pk=pk)
