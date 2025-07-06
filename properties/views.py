@@ -13,7 +13,9 @@ class PropertyList(APIView):
         return Response(serializer.data, status=200)
     
     def post(self, request):
+        print(request.data)
         serializer = PropertySerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
             return Response(serializer.data, status=201)

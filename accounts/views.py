@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from rest_framework.views import APIView
 from .models import CustomUser
 from django.contrib.auth import authenticate, login
-from .serializers import UserSerializer, MyTokenObtainPairSerializer, RegisterSerializer, LoginSerializer
+from .serializers import UserSerializer, EditUserSerializer, MyTokenObtainPairSerializer, RegisterSerializer, LoginSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics, status
@@ -24,6 +26,7 @@ class RegisterView(generics.ListCreateAPIView):
 class LoginView(knox_views.LoginView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+    # parser_classes = (MultiPartParser, FormParser,)
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
@@ -36,10 +39,44 @@ class LoginView(knox_views.LoginView):
             return Response({'errors': serializer.errors}, status=status.HTTP_404_BAD_REQUEST)
 
 
-@api_view()
-@permission_classes([AllowAny])
-def profile(request):
-    if request.method == 'GET':
-        response = f"Hey {request.user}, You are seeing a GET response"
-        return Response({'response': response, 'response2': 'Other thing'}, status=status.HTTP_200_OK)
-    return Response({}, status=status.HTTP_404_BAD_REQUEST) 
+class UserProfile(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = get_object_or_404(CustomUser, pk=self.request.user.id)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=200)
+    
+    def put(self, request):
+        user = get_object_or_404(CustomUser, pk=self.request.user.id)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print(serializer.data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request):
+        user = get_object_or_404(CustomUser, pk=self.request.user.id)
+        user.delete()
+        return Response(status=204)
+   
+
+
+class EditProfile(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        user = get_object_or_404(CustomUser, pk=self.request.user.id)
+        serializer = EditUserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            print(serializer.data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request):
+        user = get_object_or_404(CustomUser, pk=self.request.user.id)
+        user.delete()
+        return Response(status=204)
+   

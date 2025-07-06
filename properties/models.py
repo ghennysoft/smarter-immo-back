@@ -19,7 +19,7 @@ class Property(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField()
-    image = models.ImageField(upload_to='images/properties/')
+    main_image = models.ImageField(upload_to='images/properties/')
     property_type = models.CharField(max_length=20, choices=PROPERTY_TYPES)
     annonce_type = models.CharField(max_length=20, choices=ANNONCE_TYPES)
     price = models.DecimalField(max_digits=12, decimal_places=2)

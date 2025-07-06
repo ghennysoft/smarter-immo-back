@@ -5,10 +5,10 @@ from accounts.serializers import UserSerializer
 class PropertyImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyImage
-        fields = ('id', 'image', 'is_main')
+        fields = ('id', 'image')
 
 class PropertySerializer(serializers.ModelSerializer):
-    images = PropertyImageSerializer(many=True, read_only=True)
+    # images = PropertyImageSerializer(many=True, read_only=True)
     owner = UserSerializer(read_only=True)
     is_favorite = serializers.SerializerMethodField()
 

@@ -30,12 +30,29 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ('password', 'groups', 'user_permissions')
 
 
+class EditUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image')  # Utilisez les champs définis dans votre modèle User
+
+    # def update(self, instance, validated_data):
+    #     user = CustomUser.objects.update(
+    #         email=validated_data['email'],
+    #         first_name=validated_data.get('first_name'),
+    #         last_name=validated_data.get('last_name'),
+    #         phone=validated_data.get('phone'),
+    #         gender=validated_data.get('gender'),
+    #         image=validated_data.get('image'),
+    #     )
+    #     return user
+    
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'password')  # Utilisez les champs définis dans votre modèle User
+        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image', 'password')  # Utilisez les champs définis dans votre modèle User
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
