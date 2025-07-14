@@ -8,9 +8,13 @@ class PropertyImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'image')
 
 class PropertySerializer(serializers.ModelSerializer):
-    # images = PropertyImageSerializer(many=True, read_only=True)
+    images = PropertyImageSerializer(many=True, read_only=True)
+    # uploaded_images = serializers.ListField(
+    #     child=serializers.ImageField(allow_empty_file=False),
+    #     write_only=True
+    # )
     owner = UserSerializer(read_only=True)
-    is_favorite = serializers.SerializerMethodField()
+    # is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -18,11 +22,18 @@ class PropertySerializer(serializers.ModelSerializer):
 
     read_only_fields = ['owner', 'created_at', 'updated_at']
 
-    def get_is_favorite(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return Favorite.objects.filter(user=request.user, property=obj).exists()
-        return False
+    # def get_is_favorite(self, obj):
+    #     request = self.context.get('request')
+    #     if request and request.user.is_authenticated:
+    #         return Favorite.objects.filter(user=request.user, property=obj).exists()
+    #     return False
+
+    def create(self, validated_data):
+        # uploaded_images = validated_data.pop('uploaded_images')
+        property = Property.objects.create(**validated_data)
+        # for image_file in uploaded_images:
+        #     PropertyImage.objects.create(property=property, image=image_file)
+        return property
 
 class FavoriteSerializer(serializers.ModelSerializer):
     property = PropertySerializer(read_only=True)

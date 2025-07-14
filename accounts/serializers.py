@@ -2,7 +2,7 @@ from .models import CustomUser
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
+# from rest_framework.exceptions import AuthenticationFailed
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -14,13 +14,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['lastname'] = user.last_name
         token['email'] = user.email
         token['phone'] = user.phone
-        token['image'] = str(user.image)
         token['gender'] = user.gender
-        token['profession'] = user.profession
         token['is_superuser'] = user.is_superuser
-        token['is_active'] = user.is_active
-        token['is_staff'] = user.is_staff
-        token['last_login'] = user.last_login
+        if user.image:
+          token['image'] = user.image.url
+        else:
+          token['image'] = None # Ou une url d'image par défaut
+        # token['is_active'] = user.is_active
+        # token['is_staff'] = user.is_staff
+        # token['last_login'] = user.last_login
         return token
 
 
@@ -64,6 +66,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             gender=validated_data.get('gender'),
         )
         return user
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'image', 'first_name', 'last_name', 'phone', 'gender')
+        # username et email peuvent être en read_only si vous ne voulez pas qu'ils soient modifiés ici
+        # read_only_fields = ('username', 'email')
     
 
 class LoginSerializer(serializers.ModelSerializer):

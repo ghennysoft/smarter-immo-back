@@ -27,11 +27,12 @@ SECRET_KEY = 'django-insecure-gt$5x)vwy2dsgb@5j*oxk!()o9(39=3o_iwhlw=6+ettzx0jp*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "smarter-immo.onrender.com", 
-]
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = [
+#     "127.0.0.1",
+#     "localhost",
+#     "smarter-immo.onrender.com", 
+# ]
 
 
 # Application definition
@@ -46,11 +47,11 @@ INSTALLED_APPS = [
 
     # packages
     'rest_framework',
-    'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'corsheaders',
+    # 'rest_framework.authtoken',
     'django_filters',
     'djoser',
-    'corsheaders',
     'knox',
 
     # local apps
@@ -156,21 +157,30 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     "https://smarter-immo.vercel.app",
 # ]
 
-REST_FRAMEWORK = {  
-    'DEFAULT_PERMISSION_CLASSES': [
-       'rest_framework.permissions.IsAuthenticated',
-    ],
+REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'knox.auth.TokenAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    )
 }
+
+# REST_FRAMEWORK = {  
+#     'DEFAULT_PERMISSION_CLASSES': [
+#        'rest_framework.permissions.IsAuthenticated',
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'knox.auth.TokenAuthentication',
+#         'rest_framework.authentication.TokenAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#     ),
+#     'DEFAULT_FILTER_BACKENDS': [
+#         'django_filters.rest_framework.DjangoFilterBackend'
+#     ],
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+#     'PAGE_SIZE': 20
+# }
 
 REST_KNOX = {
     'USER_SERIALIZER': 'accounts.serializers.UserSerializer',
@@ -187,21 +197,13 @@ DJOSER = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": False,
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Token d'accès de courte durée
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),  # Token de rafraîchissement de plus longue durée
+    'ROTATE_REFRESH_TOKENS': True, # Important pour la sécurité
+    'BLACKLIST_AFTER_ROTATION': True, # Important pour la sécurité
+    'UPDATE_LAST_LOGIN': True, # Met à jour la date de dernière connexion de l'utilisateur
 
-    "ALGORITHM": "HS256",
-    
-    "VERIFYING_KEY": None,
-    "AUDIENCE": None,
-    "ISSUER": None,
-    "JWK_URL": None,
-    "LEEWAY": 0,
-
-    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
-    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
