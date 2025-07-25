@@ -1,10 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from .models import Property, Favorite
 from .serializers import PropertySerializer, FavoriteSerializer
+
+class PropertyListView(generics.ListCreateAPIView):
+    queryset = Property.objects.all()
+    serializer_class = PropertySerializer
+    permission_classes = [AllowAny]
 
 class PropertyList(APIView):
     def get(self, request):
@@ -13,8 +18,6 @@ class PropertyList(APIView):
         return Response(serializer.data, status=200)
     
     def post(self, request):
-        print(self.request.user)
-        print(request.data)
         serializer = PropertySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=self.request.user)

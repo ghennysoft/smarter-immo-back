@@ -9,10 +9,6 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     images = PropertyImageSerializer(many=True, read_only=True)
-    # uploaded_images = serializers.ListField(
-    #     child=serializers.ImageField(allow_empty_file=False),
-    #     write_only=True
-    # )
     owner = UserSerializer(read_only=True)
     # is_favorite = serializers.SerializerMethodField()
 

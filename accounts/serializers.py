@@ -16,10 +16,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['phone'] = user.phone
         token['gender'] = user.gender
         token['is_superuser'] = user.is_superuser
-        if user.image:
-          token['image'] = user.image.url
-        else:
-          token['image'] = None # Ou une url d'image par défaut
+        token['image'] = user.image.url if user.image else None # Ou une url d'image par défaut
         # token['is_active'] = user.is_active
         # token['is_staff'] = user.is_staff
         # token['last_login'] = user.last_login
@@ -30,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         exclude = ('password', 'groups', 'user_permissions')
+        read_only_fields = ['id']
 
 
 class EditUserSerializer(serializers.ModelSerializer):
