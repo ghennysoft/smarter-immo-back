@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
+from .validators import validate_image_file
 
 
 class Property(models.Model):
@@ -19,7 +20,7 @@ class Property(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField()
-    main_image = models.ImageField(upload_to='images/properties/')
+    main_image = models.ImageField(upload_to='images/properties/', validators=[validate_image_file])
 
     price = models.PositiveIntegerField()
     city = models.CharField(max_length=100)
@@ -44,7 +45,7 @@ class Property(models.Model):
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='images/properties/')
+    image = models.ImageField(upload_to='images/properties/', validators=[validate_image_file])
 
     def __str__(self):
         return f'{self.property.title}'

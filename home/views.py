@@ -1,15 +1,9 @@
-from cours.models import Cour
-from cours.serializers import CourSerializer
 from rest_framework import generics
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
+from .models import ContactMessage
+from .serializers import ContactMessageSerializer
 
 
-class CourView(generics.ListAPIView):
-    queryset = Cour.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = CourSerializer
-
-class CourDetail(generics.RetrieveAPIView):
-    queryset = Cour.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = CourSerializer
+class ContactMessageCreateView(generics.CreateAPIView):
+    serializer_class = ContactMessageSerializer
+    permission_classes = [AllowAny]

@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from .models import Cour
+from .models import ContactMessage
 
-class CourSerializer(serializers.ModelSerializer):
+
+class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cour
-        fields = ["author", "title", "details", "skills", "price", "duration", "created_at"]
+        model = ContactMessage
+        fields = ['id', 'name', 'email', 'subject', 'message', 'created_at']
+        read_only_fields = ['id', 'created_at']

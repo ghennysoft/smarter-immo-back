@@ -1,50 +1,56 @@
-from .models import CustomUser
+from .models import CustomUser, Notification
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-# from rest_framework.exceptions import AuthenticationFailed
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['id'] = user.first_name
+        token['id'] = user.id
         token['firstname'] = user.first_name
         token['lastname'] = user.last_name
         token['email'] = user.email
         token['phone'] = user.phone
         token['gender'] = user.gender
         token['is_superuser'] = user.is_superuser
-        token['image'] = user.image.url if user.image else None # Ou une url d'image par défaut
-        # token['is_active'] = user.is_active
-        # token['is_staff'] = user.is_staff
-        # token['last_login'] = user.last_login
+        token['image'] = user.image.url if user.image else None
         return token
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_online = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = CustomUser
         exclude = ('password', 'groups', 'user_permissions')
         read_only_fields = ['id']
 
 
+class PublicUserSerializer(serializers.ModelSerializer):
+    properties_count = serializers.SerializerMethodField()
+    is_online = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'first_name', 'last_name', 'image', 'date_joined', 'properties_count', 'is_online')
+
+    def get_properties_count(self, obj):
+        return obj.properties.count()
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ('id', 'notification_type', 'title', 'message', 'link', 'is_read', 'created_at')
+        read_only_fields = ['id', 'created_at']
+
+
 class EditUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image')  # Utilisez les champs définis dans votre modèle User
-
-    # def update(self, instance, validated_data):
-    #     user = CustomUser.objects.update(
-    #         email=validated_data['email'],
-    #         first_name=validated_data.get('first_name'),
-    #         last_name=validated_data.get('last_name'),
-    #         phone=validated_data.get('phone'),
-    #         gender=validated_data.get('gender'),
-    #         image=validated_data.get('image'),
-    #     )
-    #     return user
+        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image')
     
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -52,7 +58,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image', 'password')  # Utilisez les champs définis dans votre modèle User
+        fields = ('first_name', 'last_name', 'email', 'phone', 'gender', 'image', 'password')
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -70,8 +76,6 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('email', 'image', 'first_name', 'last_name', 'phone', 'gender')
-        # username et email peuvent être en read_only si vous ne voulez pas qu'ils soient modifiés ici
-        # read_only_fields = ('username', 'email')
     
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -80,7 +84,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'password')  # Utilisez les champs définis dans votre modèle User
+        fields = ('email', 'password')
 
     def validate(self, attrs):
         email = attrs.get('email').lower()
@@ -90,7 +94,6 @@ class LoginSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Remplissez tous les champs')
 
         user = authenticate(email=email, password=password)
-        print(f'serializer: {user}')
 
         if user is None:
             raise serializers.ValidationError("Invalid credentials, try again")
