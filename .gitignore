@@ -3,6 +3,7 @@ venv/
 env/
 *.pyc
 *.pyo
+.env*
 
 # Ignore les fichiers créés par l'IDE ou l'éditeur de code
 .idea/

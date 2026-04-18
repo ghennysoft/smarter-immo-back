@@ -17,7 +17,8 @@ env = environ.Env(
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
+# DEBUG = env('DEBUG')
+DEBUG = True
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
 
@@ -82,24 +83,24 @@ WSGI_APPLICATION = 'smarter_immo.wsgi.application'
 
 db_engine = env('DB_ENGINE', default='django.db.backends.sqlite3')
 
-if db_engine == 'django.db.backends.sqlite3':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / env('DB_NAME', default='db.sqlite3'),
-        }
+# if db_engine == 'django.db.backends.sqlite3':
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / env('DB_NAME', default='db.sqlite3'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': db_engine,
-            'NAME': env('DB_NAME'),
-            'USER': env('DB_USER', default=''),
-            'PASSWORD': env('DB_PASSWORD', default=''),
-            'HOST': env('DB_HOST', default='localhost'),
-            'PORT': env('DB_PORT', default='5432'),
-        }
-    }
+}
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': db_engine,
+#             'NAME': env('DB_NAME'),
+#             'USER': env('DB_USER', default=''),
+#             'PASSWORD': env('DB_PASSWORD', default=''),
+#             'HOST': env('DB_HOST', default='localhost'),
+#             'PORT': env('DB_PORT', default='5432'),
+#         }
+#     }
 
 
 # Password validation
@@ -136,6 +137,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
+    'https://smarter-immo.vercel.app',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ])
