@@ -78,18 +78,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'smarter_immo.wsgi.application'
 
-
 # Database
 
-db_engine = env('DB_ENGINE', default='django.db.backends.sqlite3')
+# db_engine = env('DB_ENGINE', default='django.db.backends.sqlite3')
 
 # if db_engine == 'django.db.backends.sqlite3':
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / env('DB_NAME', default='db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 # else:
 #     DATABASES = {
 #         'default': {
